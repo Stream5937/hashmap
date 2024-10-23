@@ -17,146 +17,177 @@ if (index < 0 || index >= buckets.length) {
 }
 */
 
+import {LinkedList} from "../Linked_List/linkedList.js";
+
 
 class HashMap {
 
-//class fields
-_capacity = null    //number of buckets
-_loadFactor = null  //determines when to grow buckets
+  //class fields
+  _capacity = 16;         //number of buckets
+  _used = 0;              //number of capacity used so far
+  _loadFactor = null;     //determines when to grow buckets
+  _buckets = [this._capacity]; //the array of buckets
 
 
-constructor (){
-    //cater for incorrect invocation i.e not using 'new' keyword
-    if(!(this instanceof HashMap)) {
-        //throw error:
-        throw Error('Error: Incorrect invocation needs new key word');
-        //or
-        //return new HashMap:
-       // return new HashMap();
-    }else{
-     
-     this._capacity = null ;                          //number of buckets
-     this._loadFactor = 0.75;                         //usefull load factor     
-   }
-
-}
-
-//getters & setters
-/*
-get(key) takes one argument as a key and returns the value that is assigned to this key. If a key is not found, return null.
-*/
-get key () {
-
-}
-
-
-
-
-
-
-//class methods
-
-/*
-  hash(key) takes a key and produces a hash code with it.
-  Hash maps could accommodate various data types for keys like numbers, strings, objects.
-  But for this project, only handle keys of type strings.
-*/
-hash (key) {
-    let hashCode = 0;
-       
-    const primeNumber = 31;
-    for (let i = 0; i < key.length; i++) {
-      hashCode = primeNumber * hashCode + key.charCodeAt(i);
+  constructor (){
+      //cater for incorrect invocation i.e not using 'new' keyword
+      if(!(this instanceof HashMap)) {
+          //throw error:
+          throw Error('Error: Incorrect invocation needs new key word');
+          //or
+          //return new HashMap:
+        // return new HashMap();
+      }else{
+      console.log('constructing HashMap');
+      //initialise capacity to 16 buckets
+      this._capacity = 16;                         //initial number of buckets 16
+      //grow buckets once 75% of capacity used
+      this._loadFactor = 0.75;                        //useful load factor  
+      
+      //initialise a set of buckets
+      this.initialiseBuckets();
     }
- 
-    return hashCode;
-  } 
 
-/*
-  set(key, value) takes two arguments, the first is a key and the second is a value that is assigned to this key. If a key already exists, then the old value is overwritten or we can say that we update the key’s value
-  Grow bucket size when needed, by calculating if buckets has reached the load factor.
-  Cover at time of set() 
-*/ 
-set (key,value) {
+  }
+
+  //getters & setters
+  
 
 
-}
+  //class methods
 
-/*
-has(key) takes a key as an argument and returns true or false based on whether or not the key is in the hash map.
-*/
+  /*
+    hash(key) takes a key and produces a hash code with it.
+    Hash maps could accommodate various data types for keys like numbers, strings, objects.
+    But for this project, only handle keys of type strings.
+  */
+  hash (key) {
+      let hashCode = 0;
+        
+      const primeNumber = 31;
+      for (let i = 0; i < key.length; i++) {
+        hashCode = primeNumber * hashCode + key.charCodeAt(i);
+      }
+  
+      return hashCode;
+    } 
 
-has (key) {
-    let keyFound = false;
+  /*
+  get(key) takes one argument as a key and returns the value that is assigned to this key. If a key is not found, return null.
+  */
+  get key () {
+    let value = 0;
 
-    return keyFound;
-}
+    return value;
+  }
 
-/*
-remove(key) takes a key as an argument. If the given key is in the hash map, it should remove the entry with that key and return true. If the key isn’t in the hash map, it should return false.
-*/
+  /*
+    set(key, value) takes two arguments, the first is a key and the second is a value that is assigned to this key. If a key already exists, then the old value is overwritten or we can say that we update the key’s value
+    Grow bucket size when needed, by calculating if buckets has reached the load factor.
+    Cover at time of set() 
+  */ 
 
-remove (key) {
-    let keyRemoved = false;
+  set (key,value) {
+    let growBuckets = false;
+    console.log('Setting HashMap key: ',key,', value: ',value);
+    let hashCode = this.hash (key);
+    console.log('Hash code for ',key,' is hashCode ', hashCode);
+    let bucketIndex = hashCode;
+    while(bucketIndex >= this._capacity){
+      bucketIndex = bucketIndex % this._capacity;   
+    }
+    console.log('bucketIndex: ',bucketIndex);
+    let bucket = this._buckets[bucketIndex];
+    //console.log('bucket: ',bucket);
+    bucket.append(value);
+    console.log('bucket[',bucketIndex,'] head is: ',bucket.head );
+    return growBuckets;
+  }
 
-    return keyRemoved;
-}
+  /*
+  has(key) takes a key as an argument and returns true or false based on whether or not the key is in the hash map.
+  */
 
-/*
-length() returns the number of stored keys in the hash map.
-*/
+  has (key) {
+      let keyFound = false;
 
-length () {
-    let keysStored = 0;
-    
-    return keysStored;
-}
+      return keyFound;
+  }
 
-/*
-clear() removes all entries in the hash map.
-*/
+  /*
+  remove(key) takes a key as an argument. If the given key is in the hash map, it should remove the entry with that key and return true. If the key isn’t in the hash map, it should return false.
+  */
 
-clear () {
-    let mapCleared = false;
+  remove (key) {
+      let keyRemoved = false;
 
-    return mapCleared;
-}
+      return keyRemoved;
+  }
 
-/*
-keys() returns an array containing all the keys inside the hash map.
-*/
+  /*
+  length() returns the number of stored keys in the hash map.
+  */
 
-keys () {
-    let keyArray = [];
+  length () {
+      let keysStored = 0;
+      
+      return keysStored;
+  }
 
+  /*
+  clear() removes all entries in the hash map.
+  */
 
-    return keyArray;
-}
+  clear () {
+      let mapCleared = false;
 
-/*
-values() returns an array containing all the values.
-*/
+      return mapCleared;
+  }
 
-values () {
-    let valArray = [];
+  /*
+  keys() returns an array containing all the keys inside the hash map.
+  */
 
-
-    return valArray;
-}
-
-/*
-entries() returns an array that contains each key, value pair. Example: [[firstKey, firstValue], [secondKey, secondValue]]  NB hash map does not preserve insertion order!
-*/
-
-entries () {
-    let entArray = [];      // array of all k:v pairs  [ [key:value], [k:v], [k:v], ..... ]
-
-    return entArray
-}
+  keys () {
+      let keyArray = [];
 
 
+      return keyArray;
+  }
+
+  /*
+  values() returns an array containing all the values.
+  */
+
+  values () {
+      let valArray = [];
 
 
+      return valArray;
+  }
+
+  /*
+  entries() returns an array that contains each key, value pair. Example: [[firstKey, firstValue], [secondKey, secondValue]]  NB hash map does not preserve insertion order!
+  */
+
+  entries () {
+      let entArray = [];      // array of all k:v pairs  [ [key:value], [k:v], [k:v], ..... ]
+
+      return entArray
+  }
+
+  //create container for an initially empty LinkedList
+  createBucket () {
+    const bucket = new LinkedList();
+    return bucket;
+  }
+
+  //initialise an array of buckets to initial capacity
+  initialiseBuckets () {
+      for (let i = 0; i < this._capacity; i++) {
+        this._buckets[i] = this.createBucket();
+    }
+  }
 
 
 }
