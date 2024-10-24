@@ -26,8 +26,11 @@ class HashMap {
   _capacity = 16;               //number of buckets
   _used = 0;                    //number of capacity used so far      
   _loadFactor = null;           //determines when to grow buckets
-  _buckets = [this._capacity]; //the array of buckets
-  _bucketsIndexArray = [];       //an array of indices used
+  _buckets = [this._capacity];  //the array of buckets
+  _bucketsIndexArray = [];      //an array of indices used
+  _entArray = [];
+  _keyArray = [];
+  _valArray = [];
 
 
   constructor (){
@@ -198,10 +201,11 @@ class HashMap {
   */
 
   keys () {
-      let keyArray = [];
-
-
-      return keyArray;
+    this._keyArray = [];
+    let keyArray = this._keyArray;
+   // this._entArray = [];
+    this.entries();     //also fills this._keyArray
+    return keyArray;
   }
 
   /*
@@ -209,10 +213,11 @@ class HashMap {
   */
 
   values () {
-      let valArray = [];
-
-
-      return valArray;
+    this._valArray=[];
+    let valArray = this._valArray;
+    //this._entArray = [];
+    this.entries();     //also fills this._valArray
+    return valArray;
   }
 
   /*
@@ -220,7 +225,8 @@ class HashMap {
   */
 
   entries () {
-      let entArray = [];      // array of all k:v pairs  [ [key:value], [k:v], [k:v], ..... ]
+      this._entArray = [];
+      let entArray = this._entArray;      // array of all k:v pairs  [ [key:value], [k:v], [k:v], ..... ]
       
       let count = 0;
       let valArray;
@@ -235,11 +241,15 @@ class HashMap {
             throw new Error("Trying to access index out of bound");
           }else{
             entArray.push(bucketList.at(i).value);
+            this._keyArray.push(bucketList.at(i).value[0]);
+            this._valArray.push(bucketList.at(i).value[1]);
             //console.log('entArray at ',i,', : ',entArray);
+            
           }
         }
         count++;
       }
+      
       return entArray
   }
 
