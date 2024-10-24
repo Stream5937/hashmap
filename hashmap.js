@@ -137,13 +137,18 @@ class HashMap {
       bucketList = this._buckets[count];
       size = bucketList.size;
       for(let i =0; i< size; i++){
-        valArray = bucketList.at(i).value;
-       // console.log('valArray at ',i,', : ',valArray);
-        if(valArray.includes(key)){
-          keyFound = true;
-          console.log('True ', key, ' found in bucket: ', count);
+        //ensure provision of bucket access restrictions:
+        if (i < 0 || i >= this._buckets.length) {
+          throw new Error("Trying to access index out of bound");
         }else{
-          console.log('False ', key, ' not found in bucket: ', count);
+          valArray = bucketList.at(i).value;
+        // console.log('valArray at ',i,', : ',valArray);
+          if(valArray.includes(key)){
+            keyFound = true;
+           // console.log('True ', key, ' found in bucket: ', count);
+          }else{
+           // console.log('False ', key, ' not found in bucket: ', count);
+          }
         }
       }
       count++;
@@ -157,7 +162,14 @@ class HashMap {
 
   remove (key) {
       let keyRemoved = false;
+      if(this.has(key)){
+        console.log('key found so removing: ', key);
+        //remove key
 
+        keyRemoved = true;
+      }else{
+        console.log('key Not found - unable to remove ', key);
+      }
       return keyRemoved;
   }
 
@@ -209,7 +221,25 @@ class HashMap {
 
   entries () {
       let entArray = [];      // array of all k:v pairs  [ [key:value], [k:v], [k:v], ..... ]
-
+      
+      let count = 0;
+      let valArray;
+      let bucketList;
+      let size;
+      while(count < this._capacity){
+        bucketList = this._buckets[count];
+        size = bucketList.size;
+        for(let i =0; i< size; i++){
+          //ensure provision of bucket access restrictions:
+          if (i < 0 || i >= this._buckets.length) {
+            throw new Error("Trying to access index out of bound");
+          }else{
+            entArray.push(bucketList.at(i).value);
+            //console.log('entArray at ',i,', : ',entArray);
+          }
+        }
+        count++;
+      }
       return entArray
   }
 
