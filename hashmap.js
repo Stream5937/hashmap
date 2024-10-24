@@ -23,10 +23,11 @@ import {LinkedList} from "../Linked_List/linkedList.js";
 class HashMap {
 
   //class fields
-  _capacity = 16;         //number of buckets
-  _used = 0;              //number of capacity used so far
-  _loadFactor = null;     //determines when to grow buckets
+  _capacity = 16;               //number of buckets
+  _used = 0;                    //number of capacity used so far      
+  _loadFactor = null;           //determines when to grow buckets
   _buckets = [this._capacity]; //the array of buckets
+  _bucketsIndexArray = [];       //an array of indices used
 
 
   constructor (){
@@ -91,17 +92,35 @@ class HashMap {
     let growBuckets = false;
     console.log('Setting HashMap key: ',key,', value: ',value);
     let hashCode = this.hash (key);
-    console.log('Hash code for ',key,' is hashCode ', hashCode);
+    //console.log('Hash code for ',key,' is hashCode ', hashCode);
     let bucketIndex = hashCode;
     while(bucketIndex >= this._capacity){
       bucketIndex = bucketIndex % this._capacity;   
     }
-    console.log('bucketIndex: ',bucketIndex);
-    let bucket = this._buckets[bucketIndex];
-    //console.log('bucket: ',bucket);
-    bucket.append(value);
-    console.log('bucket[',bucketIndex,'] head is: ',bucket.head );
-    return growBuckets;
+    //console.log('bucketIndex: ',bucketIndex);
+    //ensure provision of bucket access restrictions:
+    if (bucketIndex < 0 || bucketIndex >= this._buckets.length) {
+      throw new Error("Trying to access index out of bound");
+    }else{
+      let bucket = this._buckets[bucketIndex];
+     // console.log('bucket.at(',bucketIndex,'): ',bucket.at(bucketIndex));
+      if(this._bucketsIndexArray.includes(bucketIndex)) {
+        console.log('reusing bucket ',bucketIndex );
+      }else{
+        this._bucketsIndexArray.push(bucketIndex);
+        //console.log('incrementing buckets used')
+        this._used++;                    //increment number of buckets used only at first entry
+      }
+      //storing both the original key and the associated vale as a single value array [ the key, the value ]
+      bucket.append([key,value]);
+     // console.log('total buckets used so far:  ', this._used);
+      console.log('bucket[',bucketIndex,'] head is: ',bucket.head );
+     // console.log('_buckets.length: ',this._buckets.length);
+      if (this._used > this._buckets.length * this._loadFactor){
+        this.growBuckets();
+      }
+      return growBuckets;
+    }
   }
 
   /*
@@ -109,9 +128,27 @@ class HashMap {
   */
 
   has (key) {
-      let keyFound = false;
-
-      return keyFound;
+    let keyFound = false;
+    let count = 0;
+    let valArray;
+    let bucketList;
+    let size;
+    while(count < this._capacity){
+      bucketList = this._buckets[count];
+      size = bucketList.size;
+      for(let i =0; i< size; i++){
+        valArray = bucketList.at(i).value;
+       // console.log('valArray at ',i,', : ',valArray);
+        if(valArray.includes(key)){
+          keyFound = true;
+          console.log('True ', key, ' found in bucket: ', count);
+        }else{
+          console.log('False ', key, ' not found in bucket: ', count);
+        }
+      }
+      count++;
+    }
+    return keyFound; 
   }
 
   /*
@@ -187,6 +224,28 @@ class HashMap {
       for (let i = 0; i < this._capacity; i++) {
         this._buckets[i] = this.createBucket();
     }
+  }
+
+  growBuckets () {
+    let newBuckets =0;
+    console.log('Growing buckets from current:', this._capacity);
+    return newBuckets;
+  }
+
+  displayBucket (index){
+    console.log('Bucket: ',index, ' : ', this._buckets[index]);
+    return;
+  } 
+
+  displayBuckets () {
+    let count = 0;
+    do{
+      console.log('index: ',count);
+      if(!(this._buckets[count] === null )){
+        this._buckets[count].toString();
+      }
+      count++;
+    }while(count < this._buckets.length)
   }
 
 
