@@ -80,10 +80,63 @@ class HashMap {
   /*
   get(key) takes one argument as a key and returns the value that is assigned to this key. If a key is not found, return null.
   */
-  get key () {
-    let value = 0;
+  get (key) {
+    let value = [];
+    let retValue = null;
+    let count = 0;
+    let valArray;
+    let bucketList;
+    let size;
+    /***********************************************************************
+    while(count < this._capacity){
+      bucketList = this._buckets[count];
+      size = bucketList.size;
+      for(let i =0; i< size; i++){
+        //ensure provision of bucket access restrictions:
+        if (i < 0 || i >= this._buckets.length) {
+          throw new Error("Trying to access index out of bound");
+        }else{
+          valArray = bucketList.at(i).value;
+        // console.log('valArray at ',i,', : ',valArray);
+          if(valArray.includes(key)){
+            
+            console.log('True ', key, ' found in bucket: ', count);
+          }else{
+            console.log('False ', key, ' not found in bucket: ', count);
+          }
+        }
+      }
+      count++;
+    }
+***********************************************************************************/
 
-    return value;
+ //get hashcode for key
+ let hashCode = this.hash (key);
+ //console.log('Hash code for ',key,' is hashCode ', hashCode);
+ let bucketIndex = hashCode;
+ console.log('bucketIndex: ',bucketIndex);
+ while(bucketIndex >= this._capacity){
+  bucketIndex = bucketIndex % this._capacity;   
+}
+ //ensure provision of bucket access restrictions:
+ if (bucketIndex < 0 || bucketIndex >= this._buckets.length) {
+   throw new Error("Trying to access index out of bound");
+ }else{
+   let bucket = this._buckets[bucketIndex];
+   console.log('bucket', bucket);
+   let node = bucket.head;
+   
+   for (let i =0; i < bucket.size; i++){
+    console.log('node: ',node);
+      value = node.value;
+      if (value[0]  === key ){
+        retValue = value [1];
+      }else{
+        node = node.nextNode;
+      }
+   }
+ }
+    return retValue;
   }
 
   /*
