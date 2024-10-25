@@ -166,10 +166,39 @@ class HashMap {
 
   remove (key) {
       let keyRemoved = false;
+      let value = null;
+      let index = null;
       if(this.has(key)){
         console.log('key found so removing: ', key);
         //remove key
-
+        //value from entries array
+        this.entries();
+        for(let i =0; i< this._entArray.length; i++){
+          if(this._entArray[i][0] === key){
+            value = this._entArray[i];
+            console.log(value, ' to be removed');
+            
+          }
+        }
+        //get hashcode for key
+        let hashCode = this.hash (key);
+        //console.log('Hash code for ',key,' is hashCode ', hashCode);
+        let bucketIndex = hashCode;
+        while(bucketIndex >= this._capacity){
+          bucketIndex = bucketIndex % this._capacity;   
+        }
+        //console.log('bucketIndex: ',bucketIndex);
+        //ensure provision of bucket access restrictions:
+        if (bucketIndex < 0 || bucketIndex >= this._buckets.length) {
+          throw new Error("Trying to access index out of bound");
+        }else{
+          let bucket = this._buckets[bucketIndex];
+          let listIndex = bucket.find(value);
+          console.log('l_index', listIndex);
+          bucket.toString();
+          bucket.removeAt(listIndex);
+          bucket.toString();
+        }
         keyRemoved = true;
       }else{
         console.log('key Not found - unable to remove ', key);
