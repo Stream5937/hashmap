@@ -16,7 +16,8 @@ if (index < 0 || index >= buckets.length) {
   throw new Error("Trying to access index out of bound");
 }
 */
-
+import * as  readline from 'node:readline/promises';  // This uses the promise-based APIs
+import { stdin as input, stdout as output } from 'node:process';
 import {LinkedList} from "../Linked_List/linkedList.js";
 
 
@@ -190,11 +191,100 @@ class HashMap {
   clear() removes all entries in the hash map.
   */
 
-  clear () {
-      let mapCleared = false;
+  async clear () {
+    let mapCleared = false; 
+    let  confirm ='Are you certain that you want to clear all entries?';
+    /*
+    const readline = require('readline');
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    const prompt = (query) => new Promise((resolve) => rl.question(query, resolve));
 
-      return mapCleared;
-  }
+    // Usage inside async function do not need closure demo only
+    async() => {
+      try {
+        const confirm ='Are you certain that you want to clear all entries?';
+        // Can use name for next question if needed
+        //const lastName = await prompt(`Hello ${name}, what's your last name?: `);
+        // Can prompt multiple times
+        console.log(confirm);
+        rl.close();
+      } catch (e) {
+        console.error("Unable to confirm", e);
+      }
+    };
+
+    // When done reading prompt, exit program 
+    rl.on('close', () => process.exit(0));
+
+    */
+   /*
+    moved to top of module
+    import * as readline from 'node:readline/promises';  // This uses the promise-based APIs
+    import { stdin as input, stdout as output } from 'node:process';
+   */
+    const rl =  readline.createInterface({ input, output });
+    const answer = await rl.question('Are you certain that you want to clear all entries? ');
+    console.log(`confirmed? : ${answer}`);
+    rl.close();
+
+    //action clear
+    if((answer[0] === 'Y') || (answer[0] === 'y') ){
+      //delete entries
+      mapCleared = true;
+      console.log('deleting');
+      this._bucketsIndexArray = [];      //an array of indices used
+      this._entArray = [];
+      this._keyArray = [];
+      this._valArray = [];
+
+      let count = 0;
+      let bucketList;
+      let size;
+
+      while(count < this._capacity){
+        bucketList = this._buckets[count];
+        size = bucketList.size;
+        for(let i =0; i< size; i++){
+          //ensure provision of bucket access restrictions:
+          if (i < 0 || i >= this._buckets.length) {
+            throw new Error("Trying to access index out of bound");
+          }else{
+            bucketList.head = null;
+            //console.log('%253% bucketList  at count ',count,', i= ',i,', : ', bucketList.head); 
+          }
+        }
+        count++;
+      }
+
+      console.log('entries: ', this.entries());
+    }else{
+      //retain entries
+      console.log('retaining');
+      console.log('entries: ', this.entries());
+    }
+
+    return mapCleared;
+}
+
+/********************************************************************************************
+
+import * as readline from 'node:readline/promises';  // This uses the promise-based APIs
+import { stdin as input, stdout as output } from 'node:process';
+
+const rl = readline.createInterface({ input, output });
+
+const answer = await rl.question('What do you think of Node.js? ');
+
+console.log(`Thank you for your valuable feedback: ${answer}`);
+
+rl.close();
+
+********************************************************************************************
+
+Source: https://nodejs.org/api/readline.html#readline
+
+ */
+
 
   /*
   keys() returns an array containing all the keys inside the hash map.
@@ -234,18 +324,23 @@ class HashMap {
       let size;
       while(count < this._capacity){
         bucketList = this._buckets[count];
-        size = bucketList.size;
-        for(let i =0; i< size; i++){
-          //ensure provision of bucket access restrictions:
-          if (i < 0 || i >= this._buckets.length) {
-            throw new Error("Trying to access index out of bound");
-          }else{
-            entArray.push(bucketList.at(i).value);
-            this._keyArray.push(bucketList.at(i).value[0]);
-            this._valArray.push(bucketList.at(i).value[1]);
-            //console.log('entArray at ',i,', : ',entArray);
-            
+        if(bucketList.head != null){
+          size = bucketList.size;
+          //console.log('%329% ', bucketList.head,' %%');
+          for(let i =0; i< size; i++){
+            //ensure provision of bucket access restrictions:
+            if (i < 0 || i >= this._buckets.length) {
+              throw new Error("Trying to access index out of bound");
+            }else{
+              entArray.push(bucketList.at(i).value);
+              this._keyArray.push(bucketList.at(i).value[0]);
+              this._valArray.push(bucketList.at(i).value[1]);
+              //console.log('entArray at ',i,', : ',entArray);
+              
+            }
           }
+        }else{
+          //console.log('%342% ',bucketList.head,' %%');
         }
         count++;
       }
