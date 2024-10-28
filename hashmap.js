@@ -16,8 +16,10 @@ if (index < 0 || index >= buckets.length) {
   throw new Error("Trying to access index out of bound");
 }
 */
+//readLine for input to check & confirm  deletion of hashmap
 import * as  readline from 'node:readline/promises';  // This uses the promise-based APIs
 import { stdin as input, stdout as output } from 'node:process';
+//for each bucket
 import {LinkedList} from "../Linked_List/linkedList.js";
 
 
@@ -37,21 +39,19 @@ class HashMap {
   constructor (){
       //cater for incorrect invocation i.e not using 'new' keyword
       if(!(this instanceof HashMap)) {
-          //throw error:
-          throw Error('Error: Incorrect invocation needs new key word');
-          //or
-          //return new HashMap:
-        // return new HashMap();
+        //throw error:
+        throw Error('Error: Incorrect invocation needs new key word');
+        //or
+        //return new HashMap:
+        //return new HashMap();
       }else{
-      //console.log('constructing HashMap');
       //initialise capacity to 16 buckets
-      this._capacity = 16;                         //initial number of buckets 16
+      this._capacity = 16;                            //initial number of buckets 16
       //grow buckets once 75% of capacity used
       this._loadFactor = 0.75;                        //useful load factor  
       
       //initialise a set of buckets
       this.initialiseBuckets(this._buckets);
-      console.log('this._buckets: ', JSON.stringify(this._buckets));
     }
 
   }
@@ -70,12 +70,10 @@ class HashMap {
   */
   hash (key) {
       let hashCode = 0;
-        
       const primeNumber = 31;
       for (let i = 0; i < key.length; i++) {
         hashCode = primeNumber * hashCode + key.charCodeAt(i);
       }
-  
       return hashCode;
     } 
 
@@ -85,11 +83,9 @@ class HashMap {
   get (key) {
     let value = [];
     let retValue = null;
-    //get hashcode for key
+    //get hashCode for key
     let hashCode = this.hash (key);
-    //console.log('Hash code for ',key,' is hashCode ', hashCode);
     let bucketIndex = hashCode;
-    //console.log('bucketIndex: ',bucketIndex);
     while(bucketIndex >= this._capacity){
       bucketIndex = bucketIndex % this._capacity;   
     }
@@ -98,10 +94,8 @@ class HashMap {
       throw new Error("Trying to access index out of bound");
     }else{
       let bucket = this._buckets[bucketIndex];
-      //console.log('bucket', bucket);
       let node = bucket.head;
       for (let i =0; i < bucket.size; i++){
-          //console.log('node: ',node);
           value = node.value;
           if (value[0]  === key ){
             retValue = value [1];
@@ -120,43 +114,30 @@ class HashMap {
   */ 
 
   set (key,value) {
-    //let growBuckets = false;
-    console.log('buckets.length: ',this._buckets.length);
-    console.log('Setting HashMap key: ',key,', value: ',value);
     let hashCode = this.hash (key);
-    //console.log('Hash code for ',key,' is hashCode ', hashCode);
     let bucketIndex = hashCode;
     while(bucketIndex >= this._capacity){
       bucketIndex = bucketIndex % this._capacity;   
     }
-    console.log('bucketIndex: ',bucketIndex);
     //ensure provision of bucket access restrictions:
     if (bucketIndex < 0 || bucketIndex >= this._buckets.length) {
       throw new Error("Trying to access index out of bound");
     }else{
       let bucket = this._buckets[bucketIndex];
-      console.log('137 bucket.at(',bucketIndex,'): ',bucket.at(bucketIndex));
       if(this._bucketsIndexArray.includes(bucketIndex)) {
-        console.log('reusing bucket ',bucketIndex );
+        //console.log('reusing bucket ',bucketIndex );
       }else{
         this._bucketsIndexArray.push(bucketIndex);
         //console.log('incrementing buckets used')
-        this._used++;                    //increment number of buckets used only at first entry
+        this._used++;                                //increment number of buckets used only at first entry
       }
       //storing both the original key and the associated vale as a single value array [ the key, the value ]
       bucket.append([key,value]);
-     // console.log('total buckets used so far:  ', this._used);
-     // console.log('bucket[',bucketIndex,'] head is: ',bucket.head );
-     // console.log('_buckets.length: ',this._buckets.length);
-     //   if (this._used > this._buckets.length * this._loadFactor){
       if (this._used > this._capacity * this._loadFactor){
-        //this._buckets = this.growBuckets();
         this.growBuckets();
-        this.displayBuckets();
-        //growBuckets = true;
-        console.log('155 buckets.length: ',this._buckets.length);
+        //this.displayBuckets();
       }
-      return ; //growBuckets;
+      return ; 
     }
   }
 
@@ -179,7 +160,6 @@ class HashMap {
           throw new Error("Trying to access index out of bound");
         }else{
           valArray = bucketList.at(i).value;
-        // console.log('valArray at ',i,', : ',valArray);
           if(valArray.includes(key)){
             keyFound = true;
            // console.log('True ', key, ' found in bucket: ', count);
@@ -200,7 +180,6 @@ class HashMap {
   remove (key) {
       let keyRemoved = false;
       let value = null;
-      //let index = null;
       if(this.has(key)){
         console.log('key found so removing: ', key);
         //remove key
@@ -209,27 +188,21 @@ class HashMap {
         for(let i =0; i< this._entArray.length; i++){
           if(this._entArray[i][0] === key){
             value = this._entArray[i];
-            //console.log(value, ' to be removed');
           }
         }
-        //get hashcode for key
+        //get hashCode for key
         let hashCode = this.hash (key);
-        //console.log('Hash code for ',key,' is hashCode ', hashCode);
         let bucketIndex = hashCode;
         while(bucketIndex >= this._capacity){
           bucketIndex = bucketIndex % this._capacity;   
         }
-        //console.log('bucketIndex: ',bucketIndex);
         //ensure provision of bucket access restrictions:
         if (bucketIndex < 0 || bucketIndex >= this._buckets.length) {
           throw new Error("Trying to access index out of bound");
         }else{
           let bucket = this._buckets[bucketIndex];
           let listIndex = bucket.find(value);
-          //console.log('l_index', listIndex);
-          //bucket.toString();
           bucket.removeAt(listIndex);
-          //bucket.toString();
         }
         keyRemoved = true;
       }else{
@@ -256,39 +229,10 @@ class HashMap {
   async clear () {
     let mapCleared = false; 
     let  confirm ='Are you certain that you want to clear all entries?';
-    /*
-    const readline = require('readline');
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-    const prompt = (query) => new Promise((resolve) => rl.question(query, resolve));
-
-    // Usage inside async function do not need closure demo only
-    async() => {
-      try {
-        const confirm ='Are you certain that you want to clear all entries?';
-        // Can use name for next question if needed
-        //const lastName = await prompt(`Hello ${name}, what's your last name?: `);
-        // Can prompt multiple times
-        console.log(confirm);
-        rl.close();
-      } catch (e) {
-        console.error("Unable to confirm", e);
-      }
-    };
-
-    // When done reading prompt, exit program 
-    rl.on('close', () => process.exit(0));
-
-    */
-   /*
-    moved to top of module
-    import * as readline from 'node:readline/promises';  // This uses the promise-based APIs
-    import { stdin as input, stdout as output } from 'node:process';
-   */
     const rl =  readline.createInterface({ input, output });
     const answer = await rl.question('Are you certain that you want to clear all entries? ');
     console.log(`confirmed? : ${answer}`);
     rl.close();
-
     //action clear
     if((answer[0] === 'Y') || (answer[0] === 'y') ){
       //delete entries
@@ -312,41 +256,17 @@ class HashMap {
             throw new Error("Trying to access index out of bound");
           }else{
             bucketList.head = null;
-            //console.log('%253% bucketList  at count ',count,', i= ',i,', : ', bucketList.head); 
           }
         }
         count++;
       }
-
       console.log('entries: ', this.entries());
     }else{
       //retain entries
-      console.log('retaining');
-      console.log('entries: ', this.entries());
+      console.log('retaining entries: ', this.entries());
     }
-
     return mapCleared;
-}
-
-/********************************************************************************************
-
-import * as readline from 'node:readline/promises';  // This uses the promise-based APIs
-import { stdin as input, stdout as output } from 'node:process';
-
-const rl = readline.createInterface({ input, output });
-
-const answer = await rl.question('What do you think of Node.js? ');
-
-console.log(`Thank you for your valuable feedback: ${answer}`);
-
-rl.close();
-
-********************************************************************************************
-
-Source: https://nodejs.org/api/readline.html#readline
-
- */
-
+  }
 
   /*
   keys() returns an array containing all the keys inside the hash map.
@@ -355,23 +275,23 @@ Source: https://nodejs.org/api/readline.html#readline
   keys () {
     this._keyArray = [];
     let keyArray = this._keyArray;
-    this.entries();     //also fills this._keyArray
+    this.entries();               //also fills this._keyArray
     return keyArray;
   }
 
   /*
-  values() returns an array containing all the values.
+    values() returns an array containing all the values.
   */
 
   values () {
     this._valArray=[];
     let valArray = this._valArray;
-    this.entries();     //also fills this._valArray
+    this.entries();               //also fills this._valArray
     return valArray;
   }
 
   /*
-  entries() returns an array that contains each key, value pair. Example: [[firstKey, firstValue], [secondKey, secondValue]]  NB hash map does not preserve insertion order!
+    entries() returns an array that contains each key, value pair. Example: [[firstKey, firstValue], [secondKey, secondValue]]  NB hash map does not preserve insertion order!
   */
 
   entries () {
@@ -384,7 +304,6 @@ Source: https://nodejs.org/api/readline.html#readline
         bucketList = this._buckets[count];
         if(bucketList.head != null){
           size = bucketList.size;
-          //console.log('%329% ', bucketList.head,' %%');
           for(let i =0; i< size; i++){
             //ensure provision of bucket access restrictions:
             if (i < 0 || i >= this._buckets.length) {
@@ -393,11 +312,8 @@ Source: https://nodejs.org/api/readline.html#readline
               entArray.push(bucketList.at(i).value);
               this._keyArray.push(bucketList.at(i).value[0]);
               this._valArray.push(bucketList.at(i).value[1]);
-              //console.log('entArray at ',i,', : ',entArray);
             }
           }
-        }else{
-          //console.log('%342% ',bucketList.head,' %%');
         }
         count++;
       } 
@@ -413,7 +329,6 @@ Source: https://nodejs.org/api/readline.html#readline
   //initialise an array of buckets to initial capacity
   initialiseBuckets (array) {
       for (let i = 0; i < this._capacity; i++) {
-      //  this._buckets[i] = this.createBucket();
         array[i] = this.createBucket();
     }
   }
@@ -425,25 +340,10 @@ Source: https://nodejs.org/api/readline.html#readline
     let moreBuckets = [this._capacity];
     //each with new empty linked list
     this.initialiseBuckets(moreBuckets);
-    console.log('moreBuckets: ', JSON.stringify(moreBuckets));
-    console.log('Growing buckets from current:', this._capacity);
-    //clonedArray = nodesArray.map(a => {return {...a}})
-   // let tempBuckets = this._buckets.map(a => {return {...a}});
-    //console.log('tempBuckets: ', JSON.stringify(tempBuckets));
-    //increase the bucket capacity prev + new
-    /*
-    newBuckets = tempBuckets.concat(moreBuckets);
-    console.log('newBuckets: ', JSON.stringify(newBuckets));
-    */
-    //this._buckets = tempBuckets.concat(moreBuckets);
     this._buckets = this._buckets.concat(moreBuckets);
-    console.log('this._buckets: ', JSON.stringify(this._buckets));
-
     //reset capacity
     this._capacity = this._capacity * 2;
-    //return the doubled capacity of buckets
-    //return newBuckets;
-
+    //return with the doubled capacity of buckets
     return
   }
 
@@ -455,13 +355,8 @@ Source: https://nodejs.org/api/readline.html#readline
   displayBuckets () {
     let count = 0;
     do{
-      //console.log('index: ',count);
       if(!(this._buckets[count] === null )){
-       // console.log('logging bucket[',count,']');
-       // this._buckets[count].toString();
-        //console.log('-##-');
-        this.displayBucket(count);    //this._buckets[count];
-        //console.log('-##-');
+        this.displayBucket(count);    
       }
       count++;
     }while(count < this._buckets.length)
